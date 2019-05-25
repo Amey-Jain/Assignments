@@ -69,13 +69,15 @@ int get_nth_accessible(struct accessible *acc, int nth) {
 //function to find minimum sum in matrix
 int find_min_sum(int **input_matrix, struct accessible *acc_rows, struct accessible *acc_cols) {
   int i,j,sum = 0;
-  static int min_sum = -1;
+  int min_sum = -1;
   static int pas = 0;
   //if matrix is equal to or greater than 2x2
   if((acc_rows->acc_ctr > 1) && (acc_cols->acc_ctr > 1)) {
 
     //select first row accessible and iterate on it
     i = get_nth_accessible(acc_rows, 1);
+
+    //Minimum sum to be compared for each value of j
     for(j = 0; j < length_of(acc_cols) ; j++) {
       if(acc_cols->ptr[j] == 1) { //Coloumn is accessible
 	
@@ -86,19 +88,19 @@ int find_min_sum(int **input_matrix, struct accessible *acc_rows, struct accessi
 	remove_access(acc_rows, i);
 	remove_access(acc_cols, j);
 	sum = input_matrix[i][j] + find_min_sum(input_matrix, acc_rows, acc_cols);
-	if(!pas){
-	  min_sum = sum > 0 ? sum : 0;
-	}
-	else
+
+	if(min_sum == -1)
+	  min_sum = sum;
+	else 
 	  min_sum = min_sum < sum ? min_sum : sum;
+
 	printf("Minimum sum: %d sum: %d\n", min_sum,sum);
 	
 	//grant back access
 	grant_access(acc_rows, i);
 	grant_access(acc_cols, j);
-      }
+      } 
     }
-    pas = 1;
     return min_sum;
   }
   
